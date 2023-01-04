@@ -1,0 +1,7 @@
+﻿namespace University.DAL.Base
+{
+    public interface IEntity
+    {
+        int Id { get; set; }
+    }
+}
