@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Immutable;
 using University.BLL.Dtos;
 using University.BLL.Services.Contracts;
 using University.DAL.DataContext;
@@ -13,7 +14,6 @@ namespace University.API.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        //private readonly List<Student> _student;
         private readonly IMapper _mapper;
         private readonly IRepository<Student> _studentRepository;
         private readonly IStudentService _studentService;
@@ -25,28 +25,6 @@ namespace University.API.Controllers
             _studentService = studentService;
         }
 
-        //public StudentsController() 
-        //{
-        //    _student = new List<Student>
-        //    {
-        //        new Student
-        //        {
-        //            Id = 1,
-        //            Firstname="Sabina",
-        //            Lastname="Salehova",
-        //            Age=29
-        //        },
-        //        new Student
-        //        {
-        //            Id = 2,
-        //            Firstname="Sabina2",
-        //            Lastname="Salehova2",
-        //            Age=29
-        //        }
-        //    };
-        //}
-
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -54,20 +32,6 @@ namespace University.API.Controllers
             var studentsDtos = _mapper.Map<List<StudentDto>>(students);
             return Ok(studentsDtos); 
         }
-
-        //[HttpGet("{id?}")]
-        //public async Task<IActionResult> Get([FromRoute] int? id)
-        //{
-        //    if (id == null)
-        //        return NotFound();
-
-        //    var student = _student.Find(x=>x.Id==id);
-
-        //    if (student == null)
-        //        return NotFound("Bele telebe movcud deyil");
-
-        //    return Ok(student);
-        //}
 
         [HttpGet("{id?}")]
         public async Task<IActionResult> Get([FromRoute] int? id)
@@ -85,7 +49,7 @@ namespace University.API.Controllers
             return Ok(studentDto);
         }
 
-        [HttpPost]
+        [HttpPost("createdStudent")]
         public async Task<IActionResult> Post([FromForm] StudentCreateDto studentCreateDto)
         {
             var createdStudent = _mapper.Map<Student>(studentCreateDto);
@@ -93,6 +57,26 @@ namespace University.API.Controllers
             await _studentRepository.AddAsync(createdStudent);
 
             return Created(HttpContext.Request.Path, createdStudent.Id);
+        }
+
+        [HttpPost("createdStudents")]
+        public async Task<IActionResult> Post(StudentCreateDto[] studentCreateDtos)
+        {
+            IEnumerable<Student> createdStudents = _mapper.Map<StudentCreateDto[],IEnumerable<Student>>(studentCreateDtos);
+           
+            await _studentRepository.AddAsync(createdStudents);
+
+            return Created(HttpContext.Request.Path, "ok");
+        }
+
+        [HttpPost("createdStudentsWithParams")]
+        public async Task<IActionResult> ParamsPost(StudentCreateDto[] studentCreateDtos)
+        {
+            Student[] createdStudents = _mapper.Map<StudentCreateDto[], Student[]>(studentCreateDtos);
+
+            await _studentRepository.AddAsync(createdStudents);
+
+            return Created(HttpContext.Request.Path, "ok");
         }
 
         [HttpPut("{id?}")]
@@ -117,6 +101,16 @@ namespace University.API.Controllers
         public async Task<IActionResult> Delete([FromRoute] int? id)
         {
             await _studentRepository.DeleteAsync(id);
+
+            return Ok();
+        }
+
+        [HttpDelete("deleteStudent")]
+        public async Task<IActionResult> DeleteEntity(StudentCreateDto studentCreateDto)
+        {
+            var deleteStudent = _mapper.Map<Student>(studentCreateDto);
+
+            await _studentService.DeleteAsync(deleteStudent);
 
             return Ok();
         }

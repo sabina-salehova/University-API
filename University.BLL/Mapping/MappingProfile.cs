@@ -1,4 +1,5 @@
-﻿using University.BLL.Dtos;
+﻿using AutoMapper;
+using University.BLL.Dtos;
 using University.DAL.Entities;
 
 namespace University.BLL.Mapping
@@ -8,7 +9,7 @@ namespace University.BLL.Mapping
         public MappingProfile()
         {
             CreateMap<Student, StudentDto>().ReverseMap();
-            CreateMap<Student, StudentCreateDto>().ReverseMap();
+            CreateMap<Student, StudentCreateDto>().ReverseMap();            
         }
     }
 }

@@ -19,20 +19,22 @@ namespace University.DAL.Repositories
             _dbContext = dbContext;
         }
 
-        public async virtual Task AddAsync(T entity)
+        public async Task AddAsync(T entity)
         {
             await _dbContext.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
         }
 
-        public Task AddAsync(IEnumerable<T> entities)
+        public async Task AddAsync(IEnumerable<T> entities)
         {
-            throw new NotImplementedException();
+            await _dbContext.AddRangeAsync(entities.ToList());
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task AddAsync(params T[] entities)
+        public async Task AddAsync(params T[] entities)
         {
-            throw new NotImplementedException();
+            await _dbContext.AddRangeAsync(entities.ToList());
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int? id)
@@ -47,9 +49,9 @@ namespace University.DAL.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(T entity)
+        public async virtual Task DeleteAsync(T entity)
         {
-            throw new NotImplementedException();
+            //override edilib --> StudentManager
         }
 
         public async Task<IList<T>> GetAllAsync()
