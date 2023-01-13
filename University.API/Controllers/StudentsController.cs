@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
 using University.BLL.Dtos;
 using University.BLL.Services.Contracts;
+using University.BLL.Validators.StudentValidators;
 using University.DAL.DataContext;
 using University.DAL.Entities;
 using University.DAL.Repositories.Contracts;
@@ -12,17 +15,20 @@ namespace University.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class StudentsController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IRepository<Student> _studentRepository;
         private readonly IStudentService _studentService;
+       // private readonly IValidator<StudentCreateDto> _validator;
 
-        public StudentsController(IMapper mapper, IRepository<Student> studentRepository, IStudentService studentService)
+        public StudentsController(IMapper mapper, IRepository<Student> studentRepository, IStudentService studentService, IValidator<StudentCreateDto> validator)
         {
             _mapper = mapper;
             _studentRepository = studentRepository;
             _studentService = studentService;
+           // _validator = validator;
         }
 
         [HttpGet]
@@ -49,9 +55,18 @@ namespace University.API.Controllers
             return Ok(studentDto);
         }
 
-        [HttpPost("createdStudent")]
+        [HttpPost]
         public async Task<IActionResult> Post([FromForm] StudentCreateDto studentCreateDto)
         {
+            // var result = _validator.Validate(studentCreateDto);
+            //if (!result.IsValid)
+            //    return BadRequest(result);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var createdStudent = _mapper.Map<Student>(studentCreateDto);
 
             await _studentRepository.AddAsync(createdStudent);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace University.BLL.Dtos
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public byte Age { get; set; }
+        //public IFormFile file { get; set;}
     }
 }
